@@ -70,6 +70,16 @@
 #
 # $lvs_interface::         Define lvs_sync_daemon_interface.
 #                          Default: undef.
+# @param track_file
+#   Define which file trackers to run.
+#
+# @param track_interface
+#   Define which interface(s) to monitor.
+#   Go to FAULT state if one of
+#   these interfaces goes down.
+#   May be specified as either:
+#     a) interface name
+#     b) array of interfaces names
 #
 # $smtp_alert::            Send status alerts via SMTP. Requires user provided
 #                          in SMTP settings in keepalived::global_defs class.
@@ -157,38 +167,39 @@ define keepalived::vrrp::instance (
   Integer[1,254] $priority,
   $state,
   Integer[1,255] $virtual_router_id,
-  $virtual_ipaddress                                                = undef,
-  $auth_type                                                        = undef,
-  $auth_pass                                                        = undef,
-  $track_script                                                     = undef,
-  Optional[Array[String[1]]] $track_process                         = undef,
-  $track_interface                                                  = undef,
-  $lvs_interface                                                    = undef,
-  $virtual_ipaddress_int                                            = undef,
-  $virtual_ipaddress_excluded                                       = undef,
-  $virtual_routes                                                   = undef,
-  $smtp_alert                                                       = false,
-  $nopreempt                                                        = false,
-  $preempt_delay                                                    = undef,
-  $advert_int                                                       = 1,
-  $garp_master_delay                                                = 5,
-  $garp_master_refresh                                              = undef,
-  Optional[Integer] $garp_lower_prio_repeat                         = undef,
-  Optional[Boolean] $higher_prio_send_advert                        = undef,
-  Optional[Stdlib::Absolutepath] $notify_script_master_rx_lower_pri = undef,
-  $notify_script_master                                             = undef,
-  $notify_script_backup                                             = undef,
-  $notify_script_fault                                              = undef,
-  $notify_script_stop                                               = undef,
-  $notify_script                                                    = undef,
-  $multicast_source_ip                                              = undef,
-  $unicast_source_ip                                                = undef,
-  $unicast_peers                                                    = undef,
-  $dont_track_primary                                               = false,
-  $use_vmac                                                         = false,
-  $vmac_xmit_base                                                   = true,
-  Boolean $native_ipv6                                              = false,
-
+  $virtual_ipaddress                                                      = undef,
+  $auth_type                                                              = undef,
+  Optional[Variant[String, Sensitive[String]]] $auth_pass                 = undef,
+  $track_script                                                           = undef,
+  Optional[Array[String[1]]] $track_process                               = undef,
+  Optional[Array[String[1]]] $track_file                                  = undef,
+  $track_interface                                                        = undef,
+  $lvs_interface                                                          = undef,
+  $virtual_ipaddress_int                                                  = undef,
+  $virtual_ipaddress_excluded                                             = undef,
+  $virtual_routes                                                         = undef,
+  $smtp_alert                                                             = false,
+  $nopreempt                                                              = false,
+  $preempt_delay                                                          = undef,
+  $advert_int                                                             = 1,
+  $garp_master_delay                                                      = 5,
+  $garp_master_refresh                                                    = undef,
+  Optional[Integer] $garp_lower_prio_repeat                               = undef,
+  Optional[Boolean] $higher_prio_send_advert                              = undef,
+  Optional[Stdlib::Absolutepath] $notify_script_master_rx_lower_pri       = undef,
+  $notify_script_master                                                   = undef,
+  $notify_script_backup                                                   = undef,
+  $notify_script_fault                                                    = undef,
+  $notify_script_stop                                                     = undef,
+  $notify_script                                                          = undef,
+  $multicast_source_ip                                                    = undef,
+  Optional[Stdlib::IP::Address] $unicast_source_ip                        = undef,
+  Variant[Array[Stdlib::IP::Address], Stdlib::IP::Address] $unicast_peers = [],
+  Boolean $collect_unicast_peers                                          = false,
+  $dont_track_primary                                                     = false,
+  $use_vmac                                                               = false,
+  $vmac_xmit_base                                                         = true,
+  Boolean $native_ipv6                                                    = false,
 ) {
   $_name = regsubst($name, '[:\/\n]', '')
 
